@@ -1,0 +1,39 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+
+my $file = $ARGV[0];
+if (@ARGV < 1) {
+	die "Sorry, no EBI TSV report file supplied!\n";
+}
+if (@ARGV > 1) {
+	die "Sorry, too many input arguments found!\nI do not known which file to proccess!\n";
+}
+
+my $ebi_ftp = 'ftp.sra.ebi.ac.uk';
+my $ascp = '~/.aspera/connect/bin/ascp'
+my $ssh = '~/.aspera/connect/etc/asperaweb_id_dsa.openssh'
+
+my $fastq_line = '';
+my $fastq_list = '';
+
+open (IN, $file) or die "Cannot open $file: $!";
+while (<IN>) {
+	chomp;
+	next if (/^study_accession/);
+	my @w = split /\t/;
+	my $fastq_line = $w[6];
+	$fastq_line =~ s/\;/\n/g;
+	$fastq_line =~ s/$ebi_ftp//g;
+	$fastq_list .= $fastq_line . "\n";
+}
+close IN;
+
+open (OUT, ">fastq_list.txt") or die "Cannot open fastq_list.txt: $!";
+print OUT $fastq_list;
+close OUT;
+
+#system("nohup $ascp -QT -k1 -l 300m -P33001 -i $ssh -L ./ --mode recv --host fasp.sra.ebi.ac.uk --user era-fasp --file-list ./fastq_list.txt . &");
+
+print "Downloading job was submitted, fastq files will be appeared in current working directory!\n";
