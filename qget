@@ -12,8 +12,8 @@ if (@ARGV > 1) {
 }
 
 my $ebi_ftp = 'ftp.sra.ebi.ac.uk';
-my $ascp = '~/.aspera/connect/bin/ascp'
-my $ssh = '~/.aspera/connect/etc/asperaweb_id_dsa.openssh'
+my $ascp = '~/.aspera/connect/bin/ascp';
+my $ssh = '~/.aspera/connect/etc/asperaweb_id_dsa.openssh';
 
 my $fastq_line = '';
 my $fastq_list = '';
@@ -34,6 +34,6 @@ open (OUT, ">fastq_list.txt") or die "Cannot open fastq_list.txt: $!";
 print OUT $fastq_list;
 close OUT;
 
-#system("nohup $ascp -QT -k1 -l 300m -P33001 -i $ssh -L ./ --mode recv --host fasp.sra.ebi.ac.uk --user era-fasp --file-list ./fastq_list.txt . &");
+system("nohup $ascp -QT -k1 -l 300m -P33001 -i $ssh --mode recv --host fasp.sra.ebi.ac.uk --user era-fasp --file-list ./fastq_list.txt . > qget_log.txt &");
 
 print "Downloading job was submitted, fastq files will be appeared in current working directory!\n";
